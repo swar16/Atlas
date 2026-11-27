@@ -5,10 +5,11 @@ from app.llm.client import model
 from app.tools.calculator import add, multiply, subtract, divide
 from app.tools.randomtools import get_secret_number
 from app.tools.failing_tools import flaky_service, validate_age, unreliable_service
+from app.tools.web_search import web_search
 
-MAX_AGENT_STEPS = 2
+MAX_AGENT_STEPS = 10
 
-tools = [add, multiply, subtract, divide,get_secret_number, validate_age, unreliable_service, flaky_service]
+tools = [add, multiply, subtract, divide, get_secret_number, validate_age, unreliable_service, flaky_service, web_search]
 tool_node = ToolNode(tools)
 model_with_tools = model.bind_tools(tools)
 
