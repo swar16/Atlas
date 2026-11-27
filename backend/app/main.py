@@ -1,5 +1,4 @@
-from langchain_core.messages import HumanMessage
-
+from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
 from app.agent.graph import chatbot
 
 
@@ -20,10 +19,28 @@ def main() -> None:
 
         conversation.append(HumanMessage(content=question))
 
-        result = chatbot.invoke({"messages": conversation})
-        conversation = result["messages"]
+        for event in chatbot.stream(
+            {"messages": conversation},
+            stream_mode="updates"
+        ):
+            for node_name, update in event.items():
+                print(f"\n[Node: {node_name}]")
 
-        print(f"Atlas: {conversation[-1].content}")
+                for message in update.get("messages", []):
+                    conversation.append(message)
+
+                    if isinstance(message, AIMessage):
+                        if message.tool_calls:
+                            for call in message.tool_calls:
+                                print(f"Tool requested: {call['name']}")
+                                print(f"Arguments: {call['args']}")
+                        else:
+                            print(f"Atlas: {message.content}")
+
+                    elif isinstance(message, ToolMessage):
+                        print(f"Tool result: {message.content}")
+
+    return
 
 
 if __name__ == "__main__":

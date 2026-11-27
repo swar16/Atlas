@@ -3,10 +3,12 @@ from langchain_core.messages import AIMessage
 from app.agent.state import AgentState
 from app.llm.client import model
 from app.tools.calculator import add, multiply, subtract, divide
+from app.tools.randomtools import get_secret_number
+from app.tools.failing_tools import flaky_service, validate_age, unreliable_service
 
-MAX_AGENT_STEPS = 10
+MAX_AGENT_STEPS = 2
 
-tools = [add, multiply, subtract, divide]
+tools = [add, multiply, subtract, divide,get_secret_number, validate_age, unreliable_service, flaky_service]
 tool_node = ToolNode(tools)
 model_with_tools = model.bind_tools(tools)
 
